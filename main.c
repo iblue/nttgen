@@ -87,6 +87,20 @@ uint64_t prime(void) {
 
       if(is_prime(p)) {
         printf("Found %ju = %ju*2^%ju + 1 to be prime\n", p, l, k);
+
+        // Now search roots of unity
+        uint64_t r = 1;
+        while(r++) {
+          if(!is_prime(r)) {
+            continue;
+          }
+
+          if(modexp(r, (p-1)/2, p) != 1 && modexp(r, (p-1)/l, p) != 1) {
+            printf("  Primitive root of unity: %ju\n", r);
+            printf("  Root of unity for transformations up to 2^%ju: %ju\n", k, modexp(r, l, p));
+            break;
+          }
+        }
       }
     }
   }
