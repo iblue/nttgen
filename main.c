@@ -2,17 +2,19 @@
 #include <stdint.h>
 
 // Calculcates a^n % mod
-uint64_t modexp(uint64_t a, uint64_t n, uint64_t mod) {
-  size_t power = a;
-  size_t result = 1;
+uint64_t modexp(uint64_t a, uint64_t exp, uint64_t modulus) {
+  uint64_t result = 1;
 
-  while (n) {
-    if (n & 1) {
-      result = (result * power) % mod;
+  // Slow, but needed to prevent overflow.
+  __uint128_t base = a%modulus;
+
+  while (exp > 0) {
+    if (exp & 1) {
+      result = (result * base) % modulus;
     }
 
-    power = (power * power) % mod;
-    n >>= 1;
+    base = (base * base) % modulus;
+    exp >>= 1;
   }
 
   return result;
@@ -71,26 +73,27 @@ int is_prime(const uint64_t n) {
   return 1;
 }
 
-// Finds the biggest prime where l*2^k+1 < max
-uint64_t prime(uint64_t max) {
+// x86 magic for lazy people
+static inline uint32_t intlog2(const uint64_t x){return (63 - __builtin_clz (x));}
 
-}
+// Finds the biggest prime where l*2^k+1 < max with maximum k.
+uint64_t prime(void) {
+  uint64_t max_k = 63;
 
-void print_prime(uint64_t c) {
-  if(is_prime(c)) {
-    printf("%ld is prime\n", c);
-  } else {
-    printf("%ld is not prime\n", c);
+  for(uint64_t k = max_k; k > 0; k--) {
+    uint64_t l_max = 1ULL << (63-k);
+    for(uint64_t l = l_max-1; l > 1; l-=2) {
+      uint64_t p = l*(1ULL << k)+1;
+
+      if(is_prime(p)) {
+        printf("Found %ju = %ju*2^%ju + 1 to be prime\n", p, l, k);
+      }
+    }
   }
 }
 
 int main(void) {
-  uint64_t p = prime(UINT64_MAX);
-
-  for(uint64_t i=0;i<10000000;i++) {
-    print_prime(i);
-  }
-
+  prime();
 
   return 0;
 }
