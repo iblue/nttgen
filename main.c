@@ -97,7 +97,13 @@ uint64_t prime(void) {
 
           if(modexp(r, (p-1)/2, p) != 1 && modexp(r, (p-1)/l, p) != 1) {
             printf("  Primitive root of unity: %ju\n", r);
-            printf("  Root of unity for transformations up to 2^%ju: %ju\n", k, modexp(r, l, p));
+            uint64_t rp = modexp(r, l, p);
+            printf("  Root of unity for transformations up to 2^%ju: %ju\n", k, rp);
+            for(int j=k;j > 1; j--) {
+              rp = modexp(rp, 2, p);
+              printf("  Root of unity for transformations up to 2^%d: %ju\n", j, rp);
+            }
+            printf("  Scaling factor: %ju\n", p/2+1);
             break;
           }
         }
