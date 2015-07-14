@@ -1,3 +1,5 @@
+// Compile using gcc -std=c11 -o nttgen main.c
+
 #include <stdio.h>
 #include <stdint.h>
 
